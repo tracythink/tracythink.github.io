@@ -47,10 +47,10 @@
   10 Thread Pool(线程上下文加载、切换)  </br>
   11 分页 ..</br>
   
-  <h2>2016.07 黄龙时代大厦</h2>
+  <h2>2016.07 黄龙时代大厦</h2>&nbsp;
   0 自我介绍,介绍你做过的项目.</br>
 RE:项目类型，业务类型，总体介绍,电商、订单吹到一月好几亿.</br>
-</br>
+</br>&nbsp;
 
 1 详细说说你做过的项目，你学到了什么，什么项目给你什么收获. --Opening Run  </br>
   RE:开吹，大电子发票，大B2B订单中心，大云ERP，TPS===,电商订单系统那就下单呗,下单过程库存、促销、会员等，</br>
@@ -58,7 +58,7 @@ RE:项目类型，业务类型，总体介绍,电商、订单吹到一月好几�
   1-A:上锁会牺牲并发能力，在高并发情况下，库存如何处理，不超卖.</br>
        RE:锁优化,无锁线程模型,库存策略，业务反制,队列(分布式),淘宝也超卖啊. 懵逼1</br>
   1-B: 说说不对成加密的原理，对称加密与不对成加密的使用场景.</br>
-       RE: 双方公钥+私钥相互搞，GITHUB,支付为例吹,使用场景组织不出来..懵逼2</br>
+       RE: 双方公钥+私钥相互搞，GITHUB,支付为例吹,使用场景组织不出来..懵逼2</br>&nbsp;
 
 
 2 说说缓存，Redis与memcached区别，两者的原理（区别），两者的使用场景。</br>
@@ -67,26 +67,26 @@ RE:项目类型，业务类型，总体介绍,电商、订单吹到一月好几�
   2-B: Redis 使用了MS(复制)，如果数据足够大，存放不了呢.</br>
   2-C: 一写线程，一读线程,缓存中主子表，写线程会delete子表,读线程与写线程的数据一致性问题.</br>
   3-D: 说说memcached的一些使用.</br>
-  RE:OMIT.</br>
+  RE:OMIT.</br>&nbsp;
 
 3 缓存的一致性哈希算法</br>
   RE:环上2 32次方节点，保证缓存节点上下线影响在临近区域，失效最小.  COPY李智慧书:通过虚拟一层.</br>
   3-A:说说上下线节点如何落在临近区域，具体算法?</br>
-  RE:ConsistentHashLoadBalance，w LeastActiveLoadBalance，不能理解要求的细节了..</br>
+  RE:ConsistentHashLoadBalance，w LeastActiveLoadBalance，不能理解要求的细节了..</br>&nbsp;
 
 4 说说如何减少(避免)Hash冲突.</br>
   RE: 从大学数据结构Hash知识开始,java HashMap(get,put key hashCode equal),设计Hash算法使key散列均匀(mod +-MD5 ===)，再哈希.</br>
-  懵逼3，回答应该深入互动，从而逐步嗅探问题的可能场景，多种回答的可能.</br>
+  懵逼3，回答应该深入互动，从而逐步嗅探问题的可能场景，多种回答的可能.</br>&nbsp;
 
 5 防重问题,用户猛点，理想情况触发了两次请求.</br>
   RE:比如(update型)，接口保证有且只有一个线程调用成功(一个DB的情况下，锁XXX),另一个失败,前端友好性，用户体验XXX；</br>
-     TOKEN方案,页面提交; 扯:XXXX，他呵呵.</br>
+     TOKEN方案,页面提交; 扯:XXXX，他呵呵.</br>&nbsp;
 
-6 (小弟环节:OMIT)前端技术栈随意讲讲,加班情况,鸡汤交流，已看啥书,建议看书，送下楼，握手886.</br>
+6 (小弟环节:OMIT)前端技术栈随意讲讲,加班情况,鸡汤交流，已看啥书,建议看书，送下楼，握手886.</br>&nbsp;&nbsp;
 
 
 备注:以下均无</br>
-NIO,NETTY,分布式事务(2PC,3PC,paxos),RPC,MQ,concurrent,JVM,java基础,Jee框架,源码(Spring),数据库(Mysql)</br>
+NIO,NETTY,分布式事务(2PC,3PC,paxos),RPC,MQ,concurrent,JVM,java基础,Jee框架,源码(Spring),数据库(Mysql)</br>&nbsp;
 
 
 
