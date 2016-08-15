@@ -217,67 +217,59 @@ var _hmt = _hmt || [];
               <p>  <strong>分析(按场景枚举):</strong></p><br>
 
             </h3>
-            <blockquote>
-              <p>2015年十月后的随意一个深夜，我们若干个同事加班一起回来，走在中国硅谷的互联网之路上,很多时候都是下着雨，那时候每晚都是那么激情一笔，什么！加班！那是不用说的，加班算的了什么呢，我的current加班前驱Node可能是一个通宵,一个接口改到第八次,一个自测case做到2H;
-                注意逼格，我们在路上讨论的是CT6,BMW GT328 ,梅赛德斯，埃托斯蓝,400马力,人车合一,房子,140平+，旗舰等等这种key word，我们需要好好考虑期权20倍后这数字有多大,怎么分配这些数字,第一次行权要等多少时间,上市到底是在HK还是直接NASDAQ,具体什么时候上,如果实在低调在上证A股上，大概能翻多少倍数；
-                回到家躺在床上还是有点失眠的，很多想做的事感觉真的通过搬砖快实现了，所有都是一片大利好，我们的占地XX亩的仓库要建了，政府特批的钱塘江江景级风水办公楼也要怒建了，订单一天1KW都是小意思啊,
-                系统不断升级，我们也要演变加强，有时候要彻底，且不能一半就停，LET YY BEGIN.
-              </p>
-            </blockquote>
+
+            <h3 id="1-_1st">1. AB均为local service型</h3>
+             <blockquote>
+            <p>传统如service两次调用，放入Transaction边界方法内.<br>
+              (AB均为local调用这种场景不考虑AB对应DB跨库;
+              此讨论范畴不包含分布式事务情况，不涉及2PC,3PC,paxos,raft==)
+            </p></blockquote>
+
+          <h3 id="2-_2nd">2. AB为RpcInvocation</h3>
+           <blockquote>
+          <p>RPC将得到一个Timeout的结果，无法得知调用结果是失败还是成功.<br>
+
+            A成功B失败:A 补偿回滚.<br>
+            B为读,幂等,获取Timeout可Retry (若限定条件内{时间、次数}Retry失败,认为当前时间内B服务不可用) ;<br>
+            B为写,获取Timeou，同样可以设计”幂等”,<br>
+            伪幂等:B业务处理时，前置get判断业务特征值是否已修改(依靠具体业务，如支付过程中支付状态).<br>
+            Cache幂等:请求通过中心系统或者B存在cache request，选取唯一ID标识，ID需要在分布式环境下可见共享，若在短暂时间内ID同，已处理过，则直接返回cache response.<br>
+            准则:B为写时，B服务成功执行写动作可设计为只有一次(资源扣减型的写更应如此).<br>
+
+          </p></blockquote>
+
+          <h3 id="3-_3rd">3. B为MQ(中间件服务),异步</h3>
+          <blockquote>
+          <p>MQ异步模式需要高成功率 & 高执行速度(消息消费快),保证最终一致性;同时系统需要一定的容忍异步失败率;
+            使用中间件可做到AB代码物理级隔离不耦合,AB只依赖中间件,AB与中间件之间调用保持(同步)一致性、高可用.
+            (失败的及时发现与失败处理补偿机制)
+          </p></blockquote>
 
 
-            <h3 id="1-_And Then">1. And Then</h3>
-            <p>2016年,我已经不再登录OSS生产系统了，或是在从库统计环比一把月订单,<br>
-              但是我们还是保持着inspire,coding通宵继续战，猿需要激情、理想、烧烤、聊天、放松。</p>
-            <blockquote>
-              <p>  <strong>YY N重场景</strong></p>
-            </blockquote>
-
-            <p>
-
-              <figure class="highlight python">
-                <table><tr>
-                  <td class="gutter"><pre>
-                         <span class="line">一</span><br>
-                          <span class="line">二</span><br>
-                          <span class="line">三</span><br>
-                           <span class="line">四</span><br>
-                           <span class="line">五</span><br>
-                           <span class="line">六</span><br>
-                            <span class="line">七</span><br>
-                            <span class="line">八</span><br>
-                              <span class="line">......</span><br></pre></td>
-
-                  <td class="code"><pre>
-                    <span class="line">项目奖一个月暴击</span><br>
-                    <span class="line">终极版PDF扔出去,吊打任意面试官</span><br>
-                    <span class="line">睡梦学习JUC大法</span><br>
-                    <span class="line">高铁套票技术学习与讨论</span><br>
-                    <span class="line">final class PlatformEnvironnementYY</span><br>
-                    <span class="line">ATSL下午茶</span><br>
-                   <span class="line">汽车之家神器</span><br>
-                   <span class="line">姆姆一到下午3点自动trigger统计自我资产数(单调递增)，一言不合秀</span><br>
-                   <span class="line">......</span><br></pre></td>
-                </tr></table>
-
-              </figure></p>
+          <h3 id="4-_4th">4. B为cache服务(如Redis).</h3>
+          <blockquote>
+          <p>如图<br>
+            <img src="/VECTOR/2016INTERNETINDEX.png"><br>
+          </p></blockquote>
 
 
-            <h3 id="2-_Naming">2. Naming</h3>
+          <h3 id="5-_5th">3. 中间表模式(异步)</h3>
+          <blockquote>
+          <p>一种业务模型，A调用成功后，设计服务C，向中间表M(AB服务均可见,以数据库持久化功能作为消息中间件服务)写入服务B需要的数据集,AC同步调用(保证事务),那么AC先成功;
+            B异步从中间表M取出数据执行B调用.<br>
+            异步模型同样存在失败率,需要业务模型成熟去支撑.
+          </p></blockquote>
 
-      <blockquote>
-        <p>  <strong>Consistent:取自败在ConsistentHash算法的具体实现某事件，
-          场景:姆姆提出YY Proposal,其余内成员fellow其节奏，半数commit 出YY技能，形成最终一致性的YY视图。</strong></p>
+          <h3 id="6-_6th">6. AB为广义系统</h3>
+          <blockquote>
+          <p>
+          </p></blockquote>
+
+
+      <h3 id="7-_7th">7. 附件</h3>
       </blockquote>
-      <br>
-      <blockquote>
-        <p>  <strong>Spin:java的自旋是很快的，猿的自旋是无极限的.</strong></p>
-      </blockquote>
-      <br>
-      <blockquote>
-        <p>  <strong>YY:package都是YY...</strong></p>
-      </blockquote>
-      <br>
+      <p>
+      </p></blockquote>
 
 
     </div>
