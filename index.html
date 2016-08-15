@@ -257,6 +257,123 @@ var _hmt = _hmt || [];
 
 
 
+    <!--20160812-->
+        <article id="post-ConsistencyMark1ST" class="article article-type-post" itemscope itemprop="blogPost">
+
+          <div class="article-meta">
+            <a href="/archives/2016/08/" class="archive-article-date">
+              <time datetime="2016-08-12T02:43:54.000Z" itemprop="datePublished">AUGUST 12 </time>
+            </a>
+          </div>
+
+          <div class="article-inner">
+
+            <input type="hidden" class="isFancy" />
+
+
+            <header class="article-header"> <h1 class="article-title" itemprop="name"> Consistency Mark 1ST </h1>   </header>
+
+            <div class="article-info article-info-post">
+
+              <div class="article-tag tagcloud">
+                <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/default/">面试</a></li></ul>
+              </div>
+
+              <div class="clearfix"></div>
+            </div>
+
+
+            <div class="article-entry" itemprop="articleBody">
+
+              <h3 id="0-_ConsistencyMark1STOpening">问题:前后两次调用,假设前一次调用成功的情况下,两次调用一致性设计.<br>(代码形式如下图)   <br>
+                {<br>
+                ****<br>
+                resultA＝A.invoke();<br>
+                &nbsp;&nbsp;&nbsp;if(resultA)｛<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resultB=B.invoke()<br>
+                &nbsp;&nbsp;&nbsp;｝<br>
+                ****<br>
+                }<br>
+
+                <p>  <strong>分析(按场景枚举):</strong></p><br>
+
+              </h3>
+
+              <h3 id="1-_1st"><strong>1. AB均为local service型</strong></h3>
+              <blockquote>
+                <p>传统如service两次调用，放入Transaction边界方法内.<br>
+                  (AB均为local调用这种场景不考虑AB对应DB跨库;
+                  此讨论范畴不包含分布式事务情况，不涉及2PC,3PC,paxos,raft==)
+                </p></blockquote>
+
+              <h3 id="2-_2nd"><strong>2. AB为RpcInvocation</strong></h3>
+              <blockquote>
+                <p>RPC将得到一个Timeout的结果，无法得知调用结果是失败还是成功.<br>
+
+                  A成功B失败:A 补偿回滚.<br>
+                  B为读,幂等,获取Timeout可Retry (若限定条件内{时间、次数}Retry失败,认为当前时间内B服务不可用) ;<br>
+                  B为写,获取Timeou，同样可以设计”幂等”,<br>
+                  伪幂等:B业务处理时，前置get判断业务特征值是否已修改(依靠具体业务，如支付过程中支付状态).<br>
+                  Cache幂等:请求通过中心系统或者B存在cache request，选取唯一ID标识，ID需要在分布式环境下可见共享，若在短暂时间内ID同，已处理过，则直接返回cache response.<br>
+                  准则:B为写时，B服务成功执行写动作可设计为只有一次(资源扣减型的写更应如此).<br>
+
+                </p></blockquote>
+
+              <h3 id="3-_3rd"><strong>3. B为MQ(中间件服务),异步</strong></h3>
+              <blockquote>
+                <p>MQ异步模式需要高成功率 & 高执行速度(消息消费快),保证最终一致性;同时系统需要一定的容忍异步失败率;
+                  使用中间件可做到AB代码物理级隔离不耦合,AB只依赖中间件,AB与中间件之间调用保持(同步)一致性、高可用.
+                  (失败的及时发现与失败处理补偿机制)
+                </p></blockquote>
+
+
+              <h3 id="4-_4th"><strong>4. B为cache服务(如Redis).</strong></h3>
+              <blockquote>
+                <p>如图<br>
+                  <img src="/VECTOR/cache1.png"><br>
+                </p></blockquote>
+
+
+              <h3 id="5-_5th"><strong>5. 中间表模式(异步)</strong></h3>
+              <blockquote>
+                <p>一种业务模型，A调用成功后，设计服务C，向中间表M(AB服务均可见,以数据库持久化功能作为消息中间件服务)写入服务B需要的数据集,AC同步调用(保证事务),那么AC先成功;
+                  B异步从中间表M取出数据执行B调用.<br>
+                  异步模型同样存在失败率,需要业务模型成熟去支撑.
+                </p></blockquote>
+
+              <h3 id="6-_6th"><strong>6. AB为广义系统</strong></h3>
+              <blockquote>
+                <p>
+                </p></blockquote>
+
+
+              <h3 id="7-_7th"><strong>7. REF</strong></h3>
+              <p>
+
+                <figure class="highlight python">
+                  <table><tr>
+                    <td class="gutter"><pre>
+                         <span class="line">一</span><br>
+                          <span class="line">二</span><br>
+                          <span class="line">三</span><br>
+                           <span class="line">四</span><br>
+                           <span class="line">附</span><br>
+                    <td class="code"><pre>
+                    <span class="line">评价一个 架构的优劣的方法之一是，把每一个功能、非功能性的因素扩大化，再看这个架构 会不会出问题, 系统、代码、人之间寻找合作与沟通。</span><br>
+                    <span class="line">架构的设计要面向业务未来，而未来是不断发展变化的。</span><br>
+                    <span class="line">架构是一种对装逼的公然饥渴，某些公司。</span><br>
+                    <span class="line">架构是给自己的审美感，感悟接近。</span><br>
+                    <span class="line">(还是不能很好的做出设计,也没太多经验，只是记录一下，一两年后再看看这些幼稚..)</span><br>
+                  </tr></table>
+
+                </figure></p>
+
+            </div>
+
+          </div>
+
+
+        </article>
 
 
 
