@@ -238,7 +238,7 @@ var _hmt = _hmt || [];
 
           </p></blockquote>
 
-          <h3 id="3-_3rd">3. B为MQ(中间件服务),异步</h3>
+          <h3 id="3-_3rd"><strong>3. B为MQ(中间件服务),异步</strong></h3>
           <blockquote>
           <p>MQ异步模式需要高成功率 & 高执行速度(消息消费快),保证最终一致性;同时系统需要一定的容忍异步失败率;
             使用中间件可做到AB代码物理级隔离不耦合,AB只依赖中间件,AB与中间件之间调用保持(同步)一致性、高可用.
@@ -246,27 +246,27 @@ var _hmt = _hmt || [];
           </p></blockquote>
 
 
-          <h3 id="4-_4th">4. B为cache服务(如Redis).</h3>
+          <h3 id="4-_4th"><strong>4. B为cache服务(如Redis).</strong></h3>
           <blockquote>
           <p>如图<br>
             <img src="/VECTOR/2016INTERNETINDEX.png"><br>
           </p></blockquote>
 
 
-          <h3 id="5-_5th">3. 中间表模式(异步)</h3>
+          <h3 id="5-_5th"><strong>5. 中间表模式(异步)</strong></h3>
           <blockquote>
           <p>一种业务模型，A调用成功后，设计服务C，向中间表M(AB服务均可见,以数据库持久化功能作为消息中间件服务)写入服务B需要的数据集,AC同步调用(保证事务),那么AC先成功;
             B异步从中间表M取出数据执行B调用.<br>
             异步模型同样存在失败率,需要业务模型成熟去支撑.
           </p></blockquote>
 
-          <h3 id="6-_6th">6. AB为广义系统</h3>
+          <h3 id="6-_6th"><strong>6. AB为广义系统</strong></h3>
           <blockquote>
           <p>
           </p></blockquote>
 
 
-      <h3 id="7-_7th">7. 附件</h3>
+      <h3 id="7-_7th"><strong>7. 附</strong></h3>
       <blockquote>
       <p>
       </p></blockquote>
