@@ -214,8 +214,7 @@ var _hmt = _hmt || [];
               (注意:对下述测试而产生锁名字分类{GAP或NextKey Lock}不做辨析,只分析产生锁的特征,且认为GAP)<br>
               GAP原理<br>
               当执行DML写操作如delete by key(key非唯一索引)时,产生GAP，区间为key前后查找临界值Key1 key2,形成锁间隙区间[key1,key2),注意右区间为开!!!;<br><br><br>
-              若Key1或Key2无,则对应区间无界。<br>
-
+              若Key1或Key2无,则对应区间无界。<br><br><br>
 
               CREATE TABLE `tradeorder` (<br>
               `orderId` BIGINT(21) NOT NULL,<br>
@@ -226,20 +225,32 @@ var _hmt = _hmt || [];
               ) ENGINE=INNODB DEFAULT CHARSET=utf8<br>
               orderId非PK,非唯一索引<br>
 
-
-
             </p></blockquote>
 
-          <h3 id="2-_2nd"><strong>2. AB为RpcInvocation</strong></h3>
+          <h3 id="2-_2nd"><strong>2ND TEST</strong></h3>
            <blockquote>
-          <p>RPC将得到一个Timeout的结果，无法得知调用结果是失败还是成功.<br>
+          <p>
+            Session1:<br>
+            BEGIN;<br>
+            START TRANSACTION;<br>
+            DELETE FROM tradeorder WHERE  orderid=2;<br>
+            SELECT SLEEP(20);<br>
+            COMMIT;<br>
+            获取索引行为2的GAP,观察session2阻塞.<br><br><br>
 
-            A成功B失败:A 补偿回滚.<br>
-            B为读,幂等,获取Timeout可Retry (若限定条件内{时间、次数}Retry失败,认为当前时间内B服务不可用) ;<br>
-            B为写,获取Timeou，同样可以设计”幂等”,<br>
-            伪幂等:B业务处理时，前置get判断业务特征值是否已修改(依靠具体业务，如支付过程中支付状态).<br>
-            Cache幂等:请求通过中心系统或者B存在cache request，选取唯一ID标识，ID需要在分布式环境下可见共享，若在短暂时间内ID同，已处理过，则直接返回cache response.<br>
-            准则:B为写时，B服务成功执行写动作可设计为只有一次(资源扣减型的写更应如此).<br>
+
+            Session2:<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('-100','-100','-100','-100');   /*阻塞*/<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('1','5','2','2');   /*阻塞*/<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('2','5','2','2');   /*阻塞*/<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('3','5','2','2');     /*阻塞*/<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('4','5','2','2');   /*阻塞*/<br>
+            INSERT INTO `tradeorder` (`orderId`, `buyerUserId`, `sellerUserId`, `shipTime`) VALUES('200','200','200','200');   /*阻塞*/<br><br><br>
+
+            测试结果:当表tradeorder empty时,所有insert均阻塞.<br>
+            Insert key否收到GAP，取决于当前存在数据行.<br>
+            如当前存在orderid 1、2、3,那么锁区间为[1,3),insert3不阻塞,insert1阻塞<br>
+            当前存在orderid 1、2,那么锁区间为[1,∞),inset -100不阻塞,insert3阻塞,insert 100亦阻塞<br>
 
           </p></blockquote>
 
