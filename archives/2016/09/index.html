@@ -204,26 +204,18 @@ var _hmt = _hmt || [];
 
     <div class="article-entry" itemprop="articleBody">
 
-            <h3 id="0-_Opening">问题:??????????.<br>(代码形式如下图)   <br>
-
-              {<br>
-              ****<br>
-              resultA＝A.invoke();<br>
-              &nbsp;&nbsp;&nbsp;if(resultA)｛<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resultB=B.invoke()<br>
-              &nbsp;&nbsp;&nbsp;｝<br>
-              ****<br>
-              }<br>
-
-              <p>  <strong>分析(按场景枚举):</strong></p><br>
-
-            </h3>
-
-            <h3 id="1-_1st"><strong>1. AB均为local service型</strong></h3>
+            <h3 id="1-_1st"><strong>1ST ENV</strong></h3>
              <blockquote>
-            <p>传统如service两次调用，放入Transaction边界方法内.<br>
-              (AB均为local调用这种场景不考虑AB对应DB跨库;
-              此讨论范畴不包含分布式事务情况，不涉及2PC,3PC,paxos,raft==)
+            <p>
+
+              隔离级别RR & 存储引擎innodb<br>
+
+              两个session测试GAP<br>
+              (注意:对下述测试而产生锁名字分类{GAP或NextKey Lock}不做辨析,只分析产生锁的特征,且认为GAP)<br>
+              GAP原理<br>
+              当执行DML写操作如delete by key(key非唯一索引)时,产生GAP，区间为key前后查找临界值Key1 key2,形成锁间隙区间[key1,key2),注意右区间为开!!!;
+              若Key1或Key2无,则对应区间无界。<br>
+
             </p></blockquote>
 
           <h3 id="2-_2nd"><strong>2. AB为RpcInvocation</strong></h3>
