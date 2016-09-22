@@ -213,8 +213,8 @@ var _hmt = _hmt || [];
               两个session测试GAP<br>
               (注意:对下述测试而产生锁名字分类{GAP或NextKey Lock}不做辨析,只分析产生锁的特征,且认为GAP)<br>
               GAP原理<br>
-              当执行DML写操作如delete by key(key非唯一索引)时,产生GAP，区间为key前后查找临界值Key1 key2,形成锁间隙区间[key1,key2),注意右区间为开!!!;<br><br><br>
-              若Key1或Key2无,则对应区间无界。<br><br><br>
+              当执行DML写操作如delete by key(key非唯一索引)时,产生GAP，区间为key前后查找临界值Key1 key2,形成锁间隙区间[key1,key2),注意右区间为开!!!;<br>
+              若Key1或Key2无,则对应区间无界。<br><br>
 
               CREATE TABLE `tradeorder` (<br>
               `orderId` BIGINT(21) NOT NULL,<br>
