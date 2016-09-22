@@ -266,50 +266,35 @@ var _hmt = _hmt || [];
             http://dev.mysql.com/doc/refman/5.6/en/innodb-locking.html  <br>
             <img src="/VECTOR/2016/201609_1.png"><br>
 
-
           </p></blockquote>
 
 
-          <h3 id="4-_4th"><strong>4. B为cache服务(如Redis).</strong></h3>
+          <h3 id="4-_4th"><strong>4TH DEADLOCK</strong></h3>
           <blockquote>
-          <p>如图<br>
-            <img src="/VECTOR/cache1.png"><br>
+          <p>Session1、2并发执行事务T,事务T先delete 后insert, session1 与session2 delete操作互不阻塞,<br>
+            两session获取GAP区间若存在交集J,两session后面insert操作的key属于区间J,死锁形成.<br>
           </p></blockquote>
 
 
-          <h3 id="5-_5th"><strong>5. 中间表模式(异步)</strong></h3>
-          <blockquote>
-          <p>一种业务模型，A调用成功后，设计服务C，向中间表M(AB服务均可见,以数据库持久化功能作为消息中间件服务)写入服务B需要的数据集,AC同步调用(保证事务),那么AC先成功;
-            B异步从中间表M取出数据执行B调用.<br>
-            异步模型同样存在失败率,需要业务模型成熟去支撑.
-          </p></blockquote>
-
-          <h3 id="6-_6th"><strong>6. AB为广义系统</strong></h3>
+          <h3 id="5-_5th"><strong>5TH PRO1</strong></h3>
           <blockquote>
           <p>
+            /*GAP对 update不起作用,对insert起作用*/    此论述也不完全满足所有场景; <br>
+            当update set key(非唯一索引)时,视角 将update 化为 insert,那么update语句同样会受GAP影响，若set值属于GAP区间.<br>
+            当数据集为三行分别为1、2、3时，如下测试结果<br>
+            UPDATE tradeorder SET orderid=9 WHERE  orderid=3;      /*不阻塞*/<br>
+            UPDATE tradeorder SET orderid=1 WHERE  orderid=3;      /*阻塞*/<br>
+            当然，此种update语句在具体业务操作中应稀有写法吧.<br>
           </p></blockquote>
 
+          <h3 id="6-_6th"><strong>6TH PRO2</strong></h3>
+          <blockquote>
+          <p>
+            关于GAPfinal区间,双索引, 存在唯一索引 + 非唯一索引<br>
+            测试结论已出,相对复杂点,不想写了,差不多做个废熊吧.<br>
 
-      <h3 id="7-_7th"><strong>7. REF</strong></h3>
-      <p>
+          </p></blockquote>
 
-        <figure class="highlight python">
-          <table><tr>
-            <td class="gutter"><pre>
-                         <span class="line">一</span><br>
-                          <span class="line">二</span><br>
-                          <span class="line">三</span><br>
-                           <span class="line">四</span><br>
-                           <span class="line">附</span><br>
-            <td class="code"><pre>
-                    <span class="line">评价一个 架构的优劣的方法之一是，把每一个功能、非功能性的因素扩大化，再看这个架构 会不会出问题, 系统、代码、人之间寻找合作与沟通。</span><br>
-                    <span class="line">架构的设计要面向业务未来，而未来是不断发展变化的。</span><br>
-                    <span class="line">架构是一种对装逼的公然饥渴，某些公司。</span><br>
-                    <span class="line">架构是给自己的审美感，感悟接近。</span><br>
-                    <span class="line">(还是不能很好的做出设计,也没太多经验，只是记录一下，一两年后再看看这些幼稚..)</span><br>
-          </tr></table>
-
-        </figure></p>
 
     </div>
 
