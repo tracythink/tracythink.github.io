@@ -254,11 +254,19 @@ var _hmt = _hmt || [];
 
           </p></blockquote>
 
-          <h3 id="3-_3rd"><strong>3. B为MQ(中间件服务),异步</strong></h3>
+          <h3 id="3-_3rd"><strong>3RD REF</strong></h3>
           <blockquote>
-          <p>MQ异步模式需要高成功率 & 高执行速度(消息消费快),保证最终一致性;同时系统需要一定的容忍异步失败率;
-            使用中间件可做到AB代码物理级隔离不耦合,AB只依赖中间件,AB与中间件之间调用保持(同步)一致性、高可用.
-            (失败的及时发现与失败处理补偿机制)
+          <p>
+            /*obviously:update与updatge,update与select,delete与delete,delete与select的并发控制,读写互不影响*/<br>
+            /*GAP对 update不起作用,对insert起作用*/<br>
+            UPDATE tradeorder SET buyerUserId=11 WHERE  orderid=1;     /*不阻塞*/<br>
+            UPDATE tradeorder SET buyerUserId=22 WHERE  orderid=2;      /* obviously阻塞,并发写时行锁(X)*/<br>
+            UPDATE tradeorder SET buyerUserId=33 WHERE  orderid=3;      /*不阻塞*/<br><br>
+
+            http://dev.mysql.com/doc/refman/5.6/en/innodb-locking.html  <br>
+            <img src="/VECTOR/2016/201609_1.png"><br>
+
+
           </p></blockquote>
 
 
