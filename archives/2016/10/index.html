@@ -236,7 +236,7 @@ var _hmt = _hmt || [];
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rollBack();<br>
           &nbsp;&nbsp; }<br>
       }<br>
-      dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br><br>
+      dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br>
 
       消费者端可选形态<br>
       public void consumer(final Object message) throws Exception{<br>
@@ -246,8 +246,23 @@ var _hmt = _hmt || [];
           &nbsp;&nbsp;}<br>
       }<br><br>
 
-      代码形态如上两种,本质上一致,Spring事务可see DataSourceTransactionManager 系列方法doBegin,doCommit==,随意选取形态2作下文分析.<br>
-    </p></blockquote>
+      代码形态如上两种,本质上一致,Spring事务可see DataSourceTransactionManager 系列方法doBegin,doCommit==,随意选取形态2作下文分析.<br><br>
+
+
+          执行情况枚举:<br>
+          1.操作数据库dao.pesist()成功，mq.send()发送消息也成功.<br>
+          2.操作数据库dao.pesist()失败,或者持久化异常，mq.send()不执行,不发送消息.<br>
+          3.操作数据库dao.pesist()成功，但是发送消息事件mq.send()失败，throw异常，刚执行的数据库操作dao.pesist()被回滚。<br>
+          基于上三种情况，感觉这个代码模式已经OK了，完美实现了 "A服务与B服务调用一致性,引入中间件M,A与M一致性，B与M亦一致性,AB最终一致".<br><br>
+
+          <strong>危险时间枚举:</strong><br>
+          4 形态1中,当在mq.send()成功后,到操作数据库提交 com.mysql.jdbc.ConnectionImpl.commit() 之间，<br>
+          如果服务"dao.pesist()"对应服务器或者DB宕机 也将造成数据库操作因为连接异常关闭而被回滚,最终结果是mq.send()发送消息成功，数据库却被回滚。<br><br>
+
+          5.操作数据库dao.pesist()成功，mq.send()发送消息至Broker成功,但send()方法抛出异常,操作数据库dao.pesist()被回滚;此种场景应不会发生.<br>
+          基于如RabbitMQ此种产品发送消息普遍无ACK，对生产者保证消息不丢失.<br><br>
+
+        </p></blockquote>
 
 
     </div>
