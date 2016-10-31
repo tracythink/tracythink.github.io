@@ -207,8 +207,47 @@ var _hmt = _hmt || [];
 
       <blockquote>
           <img src="/VECTOR/2016/201610_1.png"><br>
-        </p></blockquote>
+       </blockquote>
 
+
+      <h3 id="0-_Opening">主题:可靠消息(事件)模式  <br>  </h3>
+
+
+      <h3 id="1-_1st"><strong>一 分析</strong></h3>
+
+      <blockquote>
+        <p>
+
+      形态1<br>
+      @Transactional<br>
+      public void serviceMethod(){<br>
+          &nbsp;&nbsp; Boolean result=dao.pesist();<br>
+          &nbsp;&nbsp;if(result){mq.send();}<br>
+      }<br>
+      serviceMethod为事务边界,mq consumer 与 local dao 顺序无关性<br>
+
+      形态2<br>
+      public void serviceMethod(){<br>
+          &nbsp;&nbsp; try{<br>
+          &nbsp;&nbsp;Boolean result=dao.pesist();<br>
+          &nbsp;&nbsp;  &nbsp;&nbsp;if(result){mq.send();}<br>
+          &nbsp;&nbsp;}<br>
+          &nbsp;&nbsp; catch(E e){<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;rollBack();<br>
+          &nbsp;&nbsp; }<br>
+      }<br>
+      dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br>
+
+      消费者端可选形态<br>
+      public void consumer(final Object message) throws Exception{<br>
+          &nbsp;&nbsp;Boolean result=handle();<br>
+          &nbsp;&nbsp;if(!result){<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;throw new RuntimeException();<br>
+          &nbsp;&nbsp;}<br>
+      }<br><br>
+
+      代码形态如上两种,本质上一致,Spring事务可see DataSourceTransactionManager 系列方法doBegin,doCommit==,随意选取形态2作下文分析.<br>
+    </p></blockquote>
 
 
     </div>
