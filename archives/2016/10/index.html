@@ -210,7 +210,7 @@ var _hmt = _hmt || [];
        </blockquote>
 
 
-      <h3 id="0-_Opening">主题:可靠消息(事件)模式  <br>  </h3>
+      <h3 id="0-_Opening"><strong>主题:可靠消息(事件)模式</strong><br>  </h3>
 
 
       <h3 id="1-_1st"><strong>一 分析</strong></h3>
@@ -264,6 +264,34 @@ var _hmt = _hmt || [];
 
         </p></blockquote>
 
+      <h3 id="1-_2nd"><strong>二 事件表</strong></h3>
+
+      <blockquote><p>
+        使用本地中间表M，存储消息(事件),形态如:<br>
+        public void serviceMethod(){<br>
+        Boolean result=dao.pesistBusinessAndMessage();  /*持久化业务与消息事件*/<br>
+        &nbsp;&nbsp;if(result){<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;try{<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;mq.send();<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;Boolean result=dao.deleteMessage();<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp; }<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;catch(E e){}<br>
+        &nbsp;&nbsp;  &nbsp;&nbsp;}<br>
+        }<br><br>
+
+
+        执行情况枚举:<br>
+        1 操作数据库dao.pesistBusinessAndMessage()成功，mq.send()发送消息也成功.<br>
+        2.操作数据库dao.pesistBusinessAndMessage()失败,或者持久化异常，mq.send()不执行,不发送消息.<br>
+        3 操作数据库dao.pesistBusinessAndMessage()成功，mq.send()发送消息失败,无所谓.<br><br>
+
+        说明:<br>
+        同一个本地事务中记录业务数据和消息事件数据,消息记为"待消费",正常情况mq.send()发送消息成功后 删除中间表"待消费"消息标示;<br>
+        执行情况3,当发送消息失败,采取定时 Schedule Task方式，从中间表M恢复未发布成功的消息(事件),重新mq.send(),重新发送成功后再 删除中间表"待消费"消息标示;<br>
+        使用本地中间表，将消息事件与业务耦合,增加额外的数据库操作，中间表可能成为瓶颈;<br>
+        增强:将本地中间表,扩展为外部服务.<br><br>
+
+        </p></blockquote>
 
     </div>
 
