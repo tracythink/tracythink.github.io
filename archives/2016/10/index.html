@@ -224,7 +224,7 @@ var _hmt = _hmt || [];
           &nbsp;&nbsp; Boolean result=dao.pesist();<br>
           &nbsp;&nbsp;if(result){mq.send();}<br>
       }<br>
-      serviceMethod为事务边界,mq consumer 与 local dao 顺序无关性<br>
+      serviceMethod为事务边界,mq consumer 与 local dao 顺序无关性<br><br>
 
       形态2<br>
       public void serviceMethod(){<br>
@@ -236,7 +236,7 @@ var _hmt = _hmt || [];
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rollBack();<br>
           &nbsp;&nbsp; }<br>
       }<br>
-      dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br>
+      dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br><br>
 
       消费者端可选形态<br>
       public void consumer(final Object message) throws Exception{<br>
