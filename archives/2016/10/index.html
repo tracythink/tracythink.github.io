@@ -229,11 +229,11 @@ var _hmt = _hmt || [];
       形态2<br>
       public void serviceMethod(){<br>
           &nbsp;&nbsp; try{<br>
-          &nbsp;&nbsp;Boolean result=dao.pesist();<br>
-          &nbsp;&nbsp;  &nbsp;&nbsp;if(result){mq.send();}<br>
+          &nbsp;&nbsp;&nbsp;Boolean result=dao.pesist();<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;if(result){mq.send();}<br>
           &nbsp;&nbsp;}<br>
           &nbsp;&nbsp; catch(E e){<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;rollBack();<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rollBack();<br>
           &nbsp;&nbsp; }<br>
       }<br>
       dao.pesist()方法为事务边界,mq consumer 与 local dao 顺序先后.<br><br>
@@ -242,7 +242,7 @@ var _hmt = _hmt || [];
       public void consumer(final Object message) throws Exception{<br>
           &nbsp;&nbsp;Boolean result=handle();<br>
           &nbsp;&nbsp;if(!result){<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;throw new RuntimeException();<br>
+          &nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;throw new RuntimeException();<br>
           &nbsp;&nbsp;}<br>
       }<br><br>
 
